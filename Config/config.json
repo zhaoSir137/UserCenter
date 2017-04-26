@@ -1,0 +1,46 @@
+{
+  "CServer":{// TCP Server服务器
+    "host":"192.168.1.125",
+    "port":"13002",
+    "timeout":0.5
+  },
+  "Redis":{//redis 缓存数据库
+    "host":"192.168.1.125",
+    "port":"6379",
+    "pwd":"123456",
+    "pool":5
+  },
+  "Mysql":{//业务mysql库
+    "host":"192.168.1.4",
+    "user":"root",
+    "password":"root",
+    "database":"panda",
+    "chatset":"utf8",
+    "pool":{
+      "init":5,
+      "max":20
+    }
+  },
+  "MysqlUserCenter":{//用户中心数据库
+    "host":"192.168.1.4",
+    "user":"root",
+    "password":"root",
+    "database":"user_center",
+    "chatset":"utf8",
+    "pool":{
+      "init":5,
+      "max":20
+    }
+  },
+  "MysqlLog":{//日志数据库
+    "host":"192.168.1.4",
+    "user":"root",
+    "password":"root",
+    "database":"panda_log",
+    "chatset":"utf8",
+    "pool":{
+      "init":5,
+      "max":20
+    }
+  }
+}

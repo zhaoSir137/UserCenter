@@ -8,11 +8,24 @@
  */
 include __DIR__."/bootstrap.php";
 ini_set('memory_limit','1024M');
-
+$async = new \core\asyncTaskManager();
 //todo mysql连接池
-
+$async ->push('mysql',function(){
+    \core\Log::CreateNew()->printLn('Mysql Successful');
+});
 //todo mysqlLog 连接池
-
+$async ->push('mysqlLog',function(){
+    \core\Log::CreateNew()->printLn('MysqlLog Successful');
+});
 //todo MysqlUserCenter 连接池
-
+$async ->push('mysqlUcenter',function (){
+    \core\Log::CreateNew()->printLn('Mysql User Center DB Successful');
+});
 //todo redis连接
+$async ->push('redis',function(){
+    \core\Log::CreateNew()->printLn('Redis Connecte Successful');
+});
+
+$async ->onComplete(function(){
+    //todo 启动服务
+});
