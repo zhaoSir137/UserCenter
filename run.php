@@ -9,6 +9,11 @@
 include __DIR__."/bootstrap.php";
 ini_set('memory_limit','1024M');
 $async = new \core\asyncTaskManager();
+
+$Mysql =
+
+
+
 //todo mysql连接池
 $async ->push('mysql',function(){
     \core\Log::CreateNew()->printLn('Mysql Successful');

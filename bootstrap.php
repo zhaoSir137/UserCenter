@@ -2,7 +2,7 @@
 
 date_default_timezone_set('Asia/Shanghai');
 define('DS', DIRECTORY_SEPARATOR);
-
+define('CONF_DIR',realpath(__DIR__.DS.'Config'.DS));
 define('RES_DIR', realpath(__DIR__.'/result/').DS);
 define('RES_LOG_DIR', RES_DIR.'log'.DS);
 
