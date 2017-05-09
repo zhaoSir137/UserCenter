@@ -10,9 +10,9 @@ include __DIR__."/bootstrap.php";
 ini_set('memory_limit','1024M');
 $async = new \core\asyncTaskManager();
 
-$Mysql =
-
-
+$Mysql = new \core\client\Mysql();
+$MysqlLog = new \core\client\Mysql(core\Config::getConf('obj')->MysqlLog);
+$MysqlUserCenter = new \core\client\Mysql(core\Config::getConf('obj')->MysqlUserCenter);
 
 //todo mysql连接池
 $async ->push('mysql',function(){
@@ -34,3 +34,5 @@ $async ->push('redis',function(){
 $async ->onComplete(function(){
     //todo 启动服务
 });
+
+$Mysql ->start();
