@@ -6,7 +6,7 @@
  * Time: 22:47
  */
 
-namespace core\client;
+namespace net\client;
 
 
 /**
@@ -103,5 +103,38 @@ class Mysql
         unset($db);
         $this ->start();
     }
+
+    /**
+     * @param $sql
+     * @param $callback
+     * @param null $db
+     */
+    public function query($sql,$callback,$db=null){}
+
+    /**
+     * @param $table
+     * @param $data
+     * @param null $callback
+     */
+    public function insert($table,$data,$callback=null){}
+
+
+    /**
+     * 转义data中的特殊字符，避免SQL注入攻击
+     *
+     */
+    public function escape($db,$data)
+    {
+
+    }
+
+    /**
+     * 修改
+     * @param $table
+     * @param $data
+     * @param $where
+     * @param $callback
+     */
+    public function update($table,$data,$where,$callback){}
 
 }

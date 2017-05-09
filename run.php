@@ -14,6 +14,9 @@ $Mysql = new \core\client\Mysql();
 $MysqlLog = new \core\client\Mysql(core\Config::getConf('obj')->MysqlLog);
 $MysqlUserCenter = new \core\client\Mysql(core\Config::getConf('obj')->MysqlUserCenter);
 
+//Redis线程池创建
+$redis =
+
 //todo mysql连接池
 $async ->push('mysql',function(){
     \core\Log::CreateNew()->printLn('Mysql Successful');
