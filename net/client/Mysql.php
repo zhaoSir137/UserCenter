@@ -33,6 +33,12 @@ class Mysql
      */
     protected $_free = [];
 
+    /**
+     * @var array 查询队列
+     */
+    protected $_queryQueue = [];
+
+
     public function __construct(\core\Config $config=null)
     {
         if(!$config){
@@ -109,7 +115,48 @@ class Mysql
      * @param $callback
      * @param null $db
      */
-    public function query($sql,$callback,$db=null){}
+    public function query($sql,$callback,$db=null)
+    {
+        if(!$db){
+            $db = $this ->getFreeMysql();
+        }
+        if(!$db && count($this->_queryQueue) < 1000)
+        {
+            \core\Log::CreateNew()->printLn('Mysql Cache Query:'.$sql);
+            $this->_queryQueue[]=[$sql,$callback];
+        }elseif ($db){
+            \core\Log::CreateNew()->printLn("Mysql Query:{$db->uuid}:sql:{$sql}");
+            $db->query($sql,function ($db,$result)use($sql,$callback){
+                if($result === false && ($db->errno==2013 || $db->errno==2013)){
+                    $this->query($sql,$callback);
+                    \core\Log::CreateNew()->printLn('Mysql Query Error Recycle:'.$db->uuid);
+                    $this ->recycle($db);
+                }else{
+                    call_user_func($callback,$db,$result);
+                    $queue = array_shift($this->_queryQueue);
+                    if($queue){
+                        \core\Log::New()->println("Mysql Query Queue:{$db->uuid}");
+                        $this->query($queue[0],$queue[1],$db);
+                        $this->start();
+                    }else{
+                        \core\Log::CreateNew()->printLn("Mysql Free:{$db->uuid}");
+                        $this ->_free[$db->uuid]=$db;//放回空闲池中
+                    }
+                }
+            });
+        }
+
+
+    }
+
+    public function getFreeMysql()
+    {
+        $db=array_shift($this->_free);
+        if(!$db){
+            $this->_size = min($this->_size+5,$this->_maxSize);//如果线程池没有了
+        }
+        return $db;
+    }
 
     /**
      * @param $table
