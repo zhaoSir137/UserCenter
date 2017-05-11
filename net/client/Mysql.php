@@ -137,7 +137,7 @@ class Mysql
                     if($queue){
                         \core\Log::New()->println("Mysql Query Queue:{$db->uuid}");
                         $this->query($queue[0],$queue[1],$db);
-                        $this->start();
+                        $this->start();//
                     }else{
                         \core\Log::CreateNew()->printLn("Mysql Free:{$db->uuid}");
                         $this ->_free[$db->uuid]=$db;//放回空闲池中
@@ -163,7 +163,29 @@ class Mysql
      * @param $data
      * @param null $callback
      */
-    public function insert($table,$data,$callback=null){}
+    public function insert($table,$data,$callback=null)
+    {
+        $db = $this ->_pool[array_rand($this->_pool)];
+        if(!$db){
+            call_user_func($callback,false,false);return;
+        }
+        if(!$callback){
+            $callback = function (){};
+        }
+        $field = array_keys($data);
+        $field = implode('`,`',$field);
+        $data = $this ->escape($db,$data);
+        $value = implode(',',$data);
+        $sql = "INSERT  INTO {$table} ($field) VALUES ({$value})";
+        $this ->query($sql,function ($db,$r)use($callback){
+            if(!$r){
+                call_user_func($callback,false);//插入数据库失败,直接返回失败,或许需要回调传db
+            }else{
+                $return = $db->insert_id?$db->insert_id:true;
+                call_user_func($callback,$return);
+            }
+        });
+    }
 
 
     /**
@@ -182,6 +204,8 @@ class Mysql
      * @param $where
      * @param $callback
      */
-    public function update($table,$data,$where,$callback){}
+    public function update($table,$data,$where,$callback){
+
+    }
 
 }
