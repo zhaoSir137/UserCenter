@@ -190,11 +190,29 @@ class Mysql
 
     /**
      * 转义data中的特殊字符，避免SQL注入攻击
-     *
+     * 该方法依赖mysqlnd，切必须在Mysql连接完成之后才能使用
      */
     public function escape($db,$data)
     {
+        if(method_exists($db,'escape')){
+            if(is_array($data)){
+                foreach ($data as $field =>$value){
+                    if(is_string($value)){
+                        $value = $db ->escape($value);
+                        $data[$field] = $value;
+                    }
+                }
+            }elseif (is_string($data)){
+                $data = $db ->escape($data);
+            }
 
+        }else{
+            foreach ($data as $field => $val){
+                $data[$field] = "'{$val}'";
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -204,7 +222,33 @@ class Mysql
      * @param $where
      * @param $callback
      */
-    public function update($table,$data,$where,$callback){
+    public function update($table,$data,$where,$callback)
+    {
+        $db = $this->_pool[array_rand($this->_pool)];
+        if(!$db){
+            call_user_func($callback,false);return;
+        }
+        $data = $this ->escape($db,$data);
+        $sql = "UPDATE {$table} SET @keyVal@";
+
+        if(is_array($data)){
+            $keyVal = '';
+            foreach ($data as $field => $v){
+                $keyVal .= "`{$field}`=`{$v}`,";
+            }
+            $keyVal = trim($keyVal,',');
+            $sql = str_replace('@keyVal@',$keyVal,$sql);
+
+            $this ->query($sql,function ($db,$result)use($callback){
+                if($result){
+                    call_user_func($callback,$db->affected_rows);
+                }else{
+                    call_user_func($callback,false);
+                }
+            });
+        }else{//必须是一个数组，否则直接返回错误
+            call_user_func($callback,-1);
+        }
 
     }
 
