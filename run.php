@@ -10,12 +10,16 @@ include __DIR__."/bootstrap.php";
 ini_set('memory_limit','1024M');
 $async = new \core\asyncTaskManager();
 
-$Mysql = new \core\client\Mysql();
-$MysqlLog = new \core\client\Mysql(core\Config::getConf('obj')->MysqlLog);
-$MysqlUserCenter = new \core\client\Mysql(core\Config::getConf('obj')->MysqlUserCenter);
+$Mysql = new \net\client\Mysql();
+$MysqlLog = new \net\client\Mysql(core\Config::getConf('obj')->MysqlLog);
+$MysqlUserCenter = new \net\client\Mysql(core\Config::getConf('obj')->MysqlUserCenter);
+
+//处理组件,接收tcpserver消息，根据消息处理相应的业务逻辑
+$CServer =
+
 
 //Redis线程池创建
-$redis =
+$redis = new \net\client\Redis();
 
 //todo mysql连接池
 $async ->push('mysql',function(){
